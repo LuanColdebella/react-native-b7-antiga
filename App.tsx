@@ -1,81 +1,52 @@
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { PizzaItem } from './components/PizzaItem';
+
+type Ingredient = {
+  id: number;         // identificador único
+  nome: string;       // nome do ingrediente
+  quantidade?: number; // quantidade (opcional)
+  unidade?: string;    // unidade de medida (opcional)
+};
 
 function App() {
 
-  const handlePizzaItemPress = (pizzaName: string) => {
-    alert(`Pizza ${pizzaName} pressed!`);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([
+    { id: 1, nome: 'Farinha' },
+    { id: 2, nome: 'Ovos' },
+    { id: 3, nome: 'Leite' },
+  ]);
+
+  const handleAddIngredient = () => {
+    const novoIngrediente = {
+      id: ingredients.length + 1,
+      nome: 'Chocolate em Pó', // aqui você altera o nome como quiser
+    };
+  
+    setIngredients(prev => [...prev, novoIngrediente]);
   };
+  
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-        <Text style={styles.title}>Lista de pizzas:</Text>
-        <ScrollView>
+        <Text style={styles.title}>Use State</Text>
 
-          <PizzaItem 
-            name='Atum' 
-            price={25} 
-            qtde={2}
-            ingredients={['atum', 'cebola', 'oregano']}
-            onPress={() => handlePizzaItemPress('Atum')}
+        <View style={{ marginTop: 20 }}>
+          <View style={styles.box}>
+            <Text style={styles.subTitle}>Ingredientes para o bolo:</Text>
+            {ingredients.map((item, index) => (
+              <Text key={index} style={styles.items}>{item.nome}</Text>
+            ))}
+          </View>
+          
+          <Button title='Adicionar Ingrediente'
+            onPress={() => handleAddIngredient()}
+            color='blue'
           />
 
-        <PizzaItem 
-          name='Frango' 
-          price={50} 
-          qtde={3}
-          ingredients={['frango', 'catupiry', 'milho']}
-          onPress={() => handlePizzaItemPress('Frango')}
-        />
+        </View>
 
-        <PizzaItem 
-          name='Portuguesa' 
-          price={30} 
-          qtde={1}
-          ingredients={['presunto', 'queijo', 'ovo', 'cebola']}
-          onPress={() => handlePizzaItemPress('Portuguesa')}
-
-        />
-
-        <PizzaItem 
-          name='Marguerita' 
-          price={20} 
-          qtde={2}
-          ingredients={['manjericão', 'tomate', 'mussarela']}
-          onPress={() => handlePizzaItemPress('Marguerita')}
-
-        />
-
-        <PizzaItem 
-          name='Calabresa4' 
-          price={15} 
-          qtde={1}
-          ingredients={['calabresa', 'cebola', 'oregano']}
-          onPress={() => handlePizzaItemPress('Calabresa4')}
-
-        />
-
-        <PizzaItem 
-          name='Calabresa2' 
-          price={15} 
-          qtde={1}
-          ingredients={['calabresa', 'cebola', 'oregano']}
-          onPress={() => handlePizzaItemPress('Calabresa2')}
-
-        />
-
-        <PizzaItem 
-          name='Calabresa' 
-          price={15} 
-          qtde={1}
-          ingredients={['calabresa', 'cebola', 'oregano']}
-          onPress={() => handlePizzaItemPress('Calabresa')}
-
-        />
-
-        </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -91,4 +62,30 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: 'red'
   },
+  items: {
+    fontSize: 17,
+    color: '#000',
+    textAlign: 'center'
+  },
+  subTitle: {
+    fontSize: 15,
+    color: '#000',
+    textAlign: 'center',
+    marginTop: 10
+  },
+  button: {
+    backgroundColor: 'blue',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    marginHorizontal: 20
+  },
+  box: {
+    borderColor: '#000000',
+    borderWidth: 1,
+    margin: 20,
+    padding: 10,
+    borderRadius: 5,
+    gap: 10
+  }
 });
