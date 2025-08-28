@@ -1,51 +1,57 @@
 import { useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, TextInput } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-
-type Ingredient = {
-  id: number;         // identificador único
-  nome: string;       // nome do ingrediente
-  quantidade?: number; // quantidade (opcional)
-  unidade?: string;    // unidade de medida (opcional)
-};
 
 function App() {
 
-  const [ingredients, setIngredients] = useState<Ingredient[]>([
-    { id: 1, nome: 'Farinha' },
-    { id: 2, nome: 'Ovos' },
-    { id: 3, nome: 'Leite' },
-  ]);
+  const [name, setName] = useState(''); //nome final aqui
+  const [nameField, setNameField] = useState(''); //digitado no campo
 
-  const handleAddIngredient = () => {
-    const novoIngrediente = {
-      id: ingredients.length + 1,
-      nome: 'Chocolate em Pó', // aqui você altera o nome como quiser
-    };
-  
-    setIngredients(prev => [...prev, novoIngrediente]);
-  };
-  
+  const handleClear = () => {
+      setName('');
+  }
+
+  const handleSendName = () => {
+    setName(nameField);
+    setNameField('')
+  }
+
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-        <Text style={styles.title}>Use State</Text>
 
-        <View style={{ marginTop: 20 }}>
-          <View style={styles.box}>
-            <Text style={styles.subTitle}>Ingredientes para o bolo:</Text>
-            {ingredients.map((item, index) => (
-              <Text key={index} style={styles.items}>{item.nome}</Text>
-            ))}
-          </View>
-          
-          <Button title='Adicionar Ingrediente'
-            onPress={() => handleAddIngredient()}
-            color='blue'
-          />
 
-        </View>
+        {name === '' &&
+          <> {/*FRAGMENT*/}
+            <Text style={styles.title}>Qual o seu nome?</Text>
+            <TextInput 
+              style={{ backgroundColor: '#EEE', padding: 10}}
+              placeholder='Digite seu nome'
+              placeholderTextColor='#999'
+              value={nameField}
+              onChangeText={text => setNameField(text)}
+            />
+            <Button
+              title='Enviar'
+              onPress={handleSendName}
+            />
+          </>
+        }
+        {name !== '' &&
+
+          <>
+            <Text>Olá {name}, tudo bem?</Text>
+            <Text>Seja bem vindo(a)!</Text>
+
+            <Button
+              title={`Não sou ${name}`}
+              onPress={handleClear}
+            />
+          </>
+
+        }
+       
 
       </SafeAreaView>
     </SafeAreaProvider>
