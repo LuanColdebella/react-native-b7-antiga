@@ -1,183 +1,111 @@
-import React, { useState } from 'react';
 import {
-  Image,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
+
+import { useEffect, useState } from 'react';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { Ball } from './components/Ball';
+
+let timer: number;
 
 const App = () => {
 
-  const [emailField, setEmailField] = useState<string>('');
-  const [passwordField, setPasswordField] = useState<string>('');
+  const [gravity] = useState(0.98);
+  const [upForce, setUpForce] = useState(0);
+  const [speed, setSpeed] = useState(0);
+  const [posY, setPosY] = useState(0);
 
-  const hendleLoginBtn = () => {
-    alert(`email: ${emailField} \n senha: ${passwordField}`);
+
+  useEffect( () => {
+    const applyGravity = () => {
+
+      //diminui o upForce
+      let newUpForce = upForce - gravity;
+      newUpForce = newUpForce < 0 ? 0 : newUpForce;
+      setUpForce(newUpForce);
+
+      //modificando velocidade
+      let newSpeed  = speed + (gravity - (newUpForce / 2)); // não posso usar o upForce porque só altera a state quando terminar o useEffect
+      setSpeed(newSpeed);
+
+      //conforme a velocidade setar posicao da bola
+      let newPosY = posY - newSpeed;
+
+      if (newPosY < 0){
+        newPosY = 0;
+        setSpeed(0);
+      }
+
+      setPosY(newPosY);
+
+    }
+
+    clearTimeout(timer);
+    timer = setTimeout(applyGravity, 30);
+  }, [gravity, upForce, speed, posY]); //quando mudar os valores de um destes [gravity, upForce, speed, posY] roda useEffact
+
+
+
+  const handleForceButton = () => {
+    setUpForce(7);
   }
-  return (
+
+  return(
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.container}>
-          <Image 
-            style={styles.logo}
-            source={require('./assets/logo.png')}
-          />
-
-          <Text style={styles.h1}>Sistema de Login</Text>
-          <Text style={styles.h2}>Bem vindo(a)! Digite seus dados abaixo.</Text>
-          
-          <View style={styles.inputArea}>
-            <Text style={styles.inputLabel}>Email</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder='Digite seu email'
-              placeholderTextColor='#999'
-              value={emailField}
-              onChangeText={(email) => setEmailField(email)}
-              autoCapitalize='none' //nunca deixa a primeira letra maiuscula
-              keyboardType='email-address' //deixa o teclado de email
-            />
-          </View>
-
-          <View style={styles.inputArea}>
-            <Text style={styles.inputLabel}>Senha</Text>
-            <TextInput
-              style={styles.inputField}
-              placeholder='Digite sua senha'
-              secureTextEntry={true}
-              placeholderTextColor='#999'
-              value={passwordField}
-              onChangeText={(password) => setPasswordField(password)}
-            />
-          </View>
-
-          <View style={styles.aditionals}>
-              <TouchableOpacity style={styles.forgotBtnArea}>
-                <Text style={styles.forgotBtnText}>Esqueci minha senha</Text>
-              </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity 
-            style={styles.button}
-            onPress={() => hendleLoginBtn()}
-            >
-            <Text style={styles.buttonText}>Entrar</Text>
-          </TouchableOpacity>
-
-          <View style={styles.signUpArea}>
-            <Text style={styles.signUpText}>Não tem uma conta?</Text>
-            <TouchableOpacity>
-              <Text style={styles.signUpBtnText}>Cadastre-se</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.footerArea}>
-            <Text style={styles.footerText}>Criado por Luan Coldebella</Text>
-          </View>
-
-
-        </View>
-      </ScrollView>
+      <SafeAreaView style={styles.container}>
       
+        <View style={styles.area}>
+          <Ball PosY={posY}/>
+        </View>
 
+        <View style={styles.control}>
+          <View>
+            <Text style={styles.controlText}>UpForce: {upForce.toFixed(2)}</Text>
+            <Text style={styles.controlText}>Speed: {speed.toFixed(2)}</Text>
+            <Text style={styles.controlText}>PosY: {posY.toFixed(2)}</Text>
+          </View>
+          <TouchableOpacity style={styles.controlButton} onPress={handleForceButton}>
+            <Text style={[styles.controlText]}>Fazer força</Text>
+          </TouchableOpacity>
+        </View>
+        
       </SafeAreaView>
     </SafeAreaProvider>
-  );
+  )
+  
 }
 
 export default App;
 
-
 const styles = StyleSheet.create({
-  scrollView :{
-    backgroundColor: '#FFF', //cor de fundo
-    paddingHorizontal: 15, //espaço na direita e na esquerda
-    paddingTop: 40 // espaço em cima
-  },
   container: {
-    alignItems: 'center', //alinhar ao centro
+    flex: 1,
+    backgroundColor: '#222'
   },
-  logo: {
-    width: 150, //largura
-    height: 150 //altura
-  },
-  h1: {
-    color: '#000', //cor do texto
-    fontSize: 27, //tamnho do texto
-    fontWeight: 'bold', //peso do texto
-    marginVertical: 10 //margem vertical em cima e em baixo
-  },
-  h2: {
-    color: '#999', //cor do texto
-    fontSize: 15, //tamanho do texto
-  },
-  inputArea: {
-    width: '100%', //largura do input 100%
-    paddingTop: 20, //espaco em cima
+  area: {
+    flex: 1,
+    backgroundColor: '#333',
+    alignItems: 'center',
 
   },
-  inputLabel: {
-    color: '#777', //cor do texto
-    fontSize: 14, //tamanho do texto
-    fontWeight: 'bold', //peso do texto
-    marginBottom: 7 //margem em baixo
+  control: {
+    flexDirection: 'row',
+    gap: 20,
+    alignItems: 'center',
+    margin: 20
   },
-  inputField: {
-    borderWidth: 2, //largura da borda
-    borderRadius: 5, //bordas arredondadas qtde
-    borderColor: '#DDD', //cod da borda
-    padding: 10 //espaco interno 
+  controlText: {
+    color: '#FFF'
   },
-  aditionals: {
-    width: '100%' //largura 100%
-  },
-  forgotBtnArea: {
-    paddingVertical: 20, //Colocar este padding para tem um espaço legar para apertar por que o usario pode ter um dedão maior 
-    // backgroundColor: '#FF0000',
-    alignSelf: 'flex-end' //alinhar ele ao lado direito
-  },
-  forgotBtnText: {
-    color: '#4162B7',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  button: {
-    backgroundColor: '#4162B7',
-    width: '100%',
-    padding: 10,
-    borderRadius: 5
-  },
-  buttonText: {
-    alignSelf: 'center', //alinhar ao centro
-    color: '#FFFF',
-    fontSize: 16,
-  },
-  signUpArea: {
-    flexDirection: 'row', //alinhar lado a lado
-    marginTop: 30,
-  },
-  signUpText: {
-    color: '#999',
-    fontSize: 13,
-    fontWeight: 'bold',
-  },
-  signUpBtnText: {
-    color: '#4162B7',
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginLeft: 5
-  },
-  footerArea: {
-    marginVertical: 30
-  },
-  footerText: {
-    color: '#999',
-    fontSize: 13,
+  controlButton: {
+    flex: 1,
+    height: 100,
+    backgroundColor: '#0061FF',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 });
