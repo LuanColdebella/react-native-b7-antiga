@@ -1,84 +1,53 @@
-import React, { useLayoutEffect, useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+
 export default function HomeScreen({ navigation }) {
-
   const [name, setName] = useState('');
-  const [count, setCount] = useState(0);
+  const [ingredients, setIngredients] = useState([]);
+
+  // ref mantém SEMPRE o valor mais recente de name,
+  // sem precisar recriar o header
+  const nameRef = useRef('');
+  useEffect(() => { nameRef.current = name; }, [name]);
+
+  const handleAdd = useCallback(() => {
+    const current = (nameRef.current || '').trim();
+    if (!current) return;
+
+    setIngredients(prev => [...prev, current]);
+    setName('');
+  }, []);
+
+  const handleAddName = (txt) => setName(txt);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: `Contagem: ${count}`
+      headerRight: () => <Button title="Adicionar" onPress={handleAdd} />,
+      headerLeft: () => <Text>Exercicio</Text>,
     });
-  }, [count] );
+  }, []);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <Button title='+ 1' onPress={hendleHeaderPlus}/>
-    });
-  }, [])
+  return (
+    <View style={styles.container}>
+      <Text>Faça um bolo</Text>
 
-  const handleSend = () => {
-    navigation.setOptions({
-      title: name,
-      headerStyle: {
-        backgroundColor: 'green'
-      }
-    });
-  }
+      <TextInput
+        style={styles.input}
+        placeholder="Digite um ingrediente"
+        value={name}
+        onChangeText={handleAddName}
+      />
 
-  const hendleHeaderPlus = () =>{
-    // setCount(count + 1); //sempre pega o count como 0
-    setCount((c) => c + 1); //sempre pega count com o valor atualizado
-  }
-
- return (
-   <View style={styles.container}>
-     <Text>Qual seu nome?</Text>
-     <TextInput
-      style={styles.input}
-      placeholder='Digite seu nome'
-      value={name}
-      onChangeText={(text) => setName(text)}
-    />
-
-    <Button title='Enviar'onPress={handleSend} />
-
-    <Button
-      title='BG AZUL' 
-      onPress={() => navigation.setOptions({
-        headerStyle: {
-          backgroundColor: 'blue'
-        }
-      })}
-    />
-
-    
-    <Button
-      title='BG VERMELHO' 
-      onPress={() => navigation.setOptions({
-        headerStyle: {
-          backgroundColor: 'red'
-        }
-      })}
-    />
-
-    <Button title='+ 1'onPress={() => setCount(count +1)} />
-
-          
-   </View>
+      <FlatList
+        data={ingredients}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => <Text>{item}</Text>}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    input: {
-      borderWidth: 2, //largura da borda
-      borderRadius: 5, //bordas arredondadas qtde
-      borderColor: '#DDD', //cod da borda
-      padding: 10 //espaco interno 
-    },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  input: { borderWidth: 2, borderRadius: 5, borderColor: '#DDD', padding: 10, marginVertical: 10, width: '80%' },
 });
