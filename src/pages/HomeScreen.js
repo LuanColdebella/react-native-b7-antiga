@@ -43,7 +43,12 @@ export default function HomeScreen({ navigation }) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => <Text>{item}</Text>}
       />
+
+      <Button title='Ir para sobre' onPress={() => navigation.navigate('About', {name: name})}></Button>
+
+
     </View>
+
   );
 }
 
