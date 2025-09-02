@@ -1,0 +1,47 @@
+import { styled } from 'styled-components/native';
+
+export const Container = styled.View`
+flex: 1;
+background-color: #333;
+`;
+
+export const TitleInput = styled.TextInput`
+font-size: 20px;
+font-weight: bold;
+padding: 15px;
+color: #FFF;
+`;
+
+export const BodyInput = styled.TextInput`
+flex: 1;
+padding: 15px;
+color: #FFF;
+font-size: 15px;
+`;
+
+export const SaveButton = styled.TouchableOpacity`
+margin-right: 15px;
+`;
+
+export const SaveButtonImage = styled.Image`
+width: 30px;
+height: 30px;
+`;
+
+export const CloseButton = styled.TouchableOpacity`
+padding: 15px;
+`;
+
+export const CloseButtonImage = styled.Image`
+width: 20px;
+height: 20px;
+`;
+
+export const DeleteButton = styled.TouchableOpacity`
+padding: 15px;
+`;
+
+export const DeleteButtonImage = styled.Image`
+width: 26px;
+height: 26px;
+`;

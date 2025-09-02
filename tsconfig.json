@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "index.js", "src/components/CustoTabBar.js"  ]
+, "index.js", "src/components/CustoTabBar.js", "src/store.ts", "src/pages/ListScreen/styles.js", "src/pages/ListScreen/index.js", "src/pages/ListScreen/styles.js"  ]
 }
